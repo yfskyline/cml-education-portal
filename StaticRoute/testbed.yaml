@@ -1,0 +1,119 @@
+testbed:
+  name: StaticRoute
+  tacacs:
+    login_prompt: 'login:'
+    password_prompt: 'Password:'
+    username: '%ENV{PYATS_USERNAME}'
+  passwords:
+    tacacs: '%ENV{PYATS_PASSWORD}'
+    enable: '%ENV{PYATS_AUTH_PASS}'
+    line: '%ENV{PYATS_PASSWORD}'
+devices:
+  terminal_server:
+    os: linux
+    type: linux
+    connections:
+      cli:
+        protocol: ssh
+        ip: 10.71.158.154
+        username: admin
+        password: C!sco123
+  iosv-0:
+    os: iosxe
+    type: router
+    series: iosv
+    tacacs:
+      username: cisco
+    passwords:
+      tacacs: cisco
+    connections:
+      defaults:
+        class: unicon.Unicon
+      a:
+        protocol: telnet
+        proxy: terminal_server
+        command: open /378d6b/n0/0
+  iosv-1:
+    os: iosxe
+    type: router
+    series: iosv
+    tacacs:
+      username: cisco
+    passwords:
+      tacacs: cisco
+    connections:
+      defaults:
+        class: unicon.Unicon
+      a:
+        protocol: telnet
+        proxy: terminal_server
+        command: open /378d6b/n1/0
+  PC1:
+    alias: a
+    os: linux
+    type: server
+    tacacs:
+      username: cisco
+    passwords:
+      linux: cisco
+    connections:
+      defaults:
+        class: unicon.Unicon
+      a:
+        protocol: telnet
+        proxy: terminal_server
+        command: open /378d6b/n2/0
+  PC2:
+    alias: uut
+    os: linux
+    type: server
+    tacacs:
+      username: cisco
+    passwords:
+      linux: cisco
+    connections:
+      defaults:
+        class: unicon.Unicon
+      a:
+        protocol: telnet
+        proxy: terminal_server
+        command: open /378d6b/n3/0
+topology:
+  iosv-0:
+    interfaces:
+      Loopback0:
+        type: loopback
+      GigabitEthernet0/0:
+        link: l0
+        type: ethernet
+      GigabitEthernet0/1:
+        link: l1
+        type: ethernet
+      GigabitEthernet0/2:
+        type: ethernet
+      GigabitEthernet0/3:
+        type: ethernet
+  iosv-1:
+    interfaces:
+      Loopback0:
+        type: loopback
+      GigabitEthernet0/0:
+        link: l1
+        type: ethernet
+      GigabitEthernet0/1:
+        link: l2
+        type: ethernet
+      GigabitEthernet0/2:
+        type: ethernet
+      GigabitEthernet0/3:
+        type: ethernet
+  PC1:
+    interfaces:
+      eth0:
+        link: l0
+        type: ethernet
+  PC2:
+    interfaces:
+      eth0:
+        link: l2
+        type: ethernet

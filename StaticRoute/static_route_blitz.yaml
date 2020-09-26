@@ -1,0 +1,35 @@
+vars:
+  device1: a
+  device2: uut
+Linux_Ping_Test:
+  description: "ping test"
+  groups: ["nxos"]
+  source:
+    pkg: genie.libs.sdk
+    class: triggers.blitz.blitz.Blitz
+  test_sections:
+    - ping_check:
+        - execute:
+            device: uut
+            command: "ping -c 5 192.168.3.100"
+            exclude:
+              - "100% packet loss"
+    - ping_check2:
+        - execute:
+            device: uut
+            command: "ping -c 5 192.168.3.100"
+            exclude:
+              - "100% packet loss"
+              
+Linux_Ping_Test2:
+  groups: ["nxos"]
+  source:
+    pkg: genie.libs.sdk
+    class: triggers.blitz.blitz.Blitz
+  test_sections:
+    - ping_check:
+        - execute:
+            device: uut
+            command: "ping -c 5 192.168.3.100"
+            include:
+              - "5/5"
