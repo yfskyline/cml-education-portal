@@ -1,0 +1,225 @@
+testbed:
+  name: answer
+  tacacs:
+    login_prompt: 'login:'
+    password_prompt: 'Password:'
+    username: '%ENV{PYATS_USERNAME}'
+  passwords:
+    tacacs: '%ENV{PYATS_PASSWORD}'
+    enable: '%ENV{PYATS_AUTH_PASS}'
+    line: '%ENV{PYATS_PASSWORD}'
+devices:
+  terminal_server:
+    os: linux
+    type: linux
+    connections:
+      cli:
+        protocol: ssh
+        ip: 10.71.158.154
+        username: admin
+        password: C!sco123
+  iosv-2:
+    alias: uut
+    os: iosxe
+    type: router
+    series: iosv
+    tacacs:
+      username: cisco
+    passwords:
+      tacacs: cisco
+    connections:
+      defaults:
+        class: unicon.Unicon
+      a:
+        protocol: telnet
+        proxy: terminal_server
+        command: open /7682fa/n0/0
+  iosv-1:
+    alias: helper
+    os: iosxe
+    type: router
+    series: iosv
+    tacacs:
+      username: cisco
+    passwords:
+      tacacs: cisco
+    connections:
+      defaults:
+        class: unicon.Unicon
+      a:
+        protocol: telnet
+        proxy: terminal_server
+        command: open /7682fa/n2/0
+  iosv-4:
+    alias: iosv-4
+    os: iosxe
+    type: router
+    series: iosv
+    tacacs:
+      username: cisco
+    passwords:
+      tacacs: cisco
+    connections:
+      defaults:
+        class: unicon.Unicon
+      a:
+        protocol: telnet
+        proxy: terminal_server
+        command: open /7682fa/n3/0
+  iosv-3:
+    alias: iosv-3
+    os: iosxe
+    type: router
+    series: iosv
+    tacacs:
+      username: cisco
+    passwords:
+      tacacs: cisco
+    connections:
+      defaults:
+        class: unicon.Unicon
+      a:
+        protocol: telnet
+        proxy: terminal_server
+        command: open /7682fa/n4/0
+  PC4:
+    alias: pc4
+    os: linux
+    type: server
+    tacacs:
+      username: cisco
+    passwords:
+      linux: cisco
+    connections:
+      defaults:
+        class: unicon.Unicon
+      a:
+        protocol: telnet
+        proxy: terminal_server
+        command: open /7682fa/n1/0
+  PC3:
+    alias: pc3
+    os: linux
+    type: server
+    tacacs:
+      username: cisco
+    passwords:
+      linux: cisco
+    connections:
+      defaults:
+        class: unicon.Unicon
+      a:
+        protocol: telnet
+        proxy: terminal_server
+        command: open /7682fa/n5/0
+  PC1:
+    alias: pc1
+    os: linux
+    type: server
+    tacacs:
+      username: cisco
+    passwords:
+      linux: cisco
+    connections:
+      defaults:
+        class: unicon.Unicon
+      a:
+        protocol: telnet
+        proxy: terminal_server
+        command: open /7682fa/n6/0
+  PC2:
+    alias: pc2
+    os: linux
+    type: server
+    tacacs:
+      username: cisco
+    passwords:
+      linux: cisco
+    connections:
+      defaults:
+        class: unicon.Unicon
+      a:
+        protocol: telnet
+        proxy: terminal_server
+        command: open /7682fa/n7/0
+topology:
+  iosv-2:
+    interfaces:
+      Loopback0:
+        type: loopback
+      GigabitEthernet0/0:
+        type: ethernet
+      GigabitEthernet0/1:
+        link: l7
+        type: ethernet
+      GigabitEthernet0/2:
+        link: l6
+        type: ethernet
+      GigabitEthernet0/3:
+        link: l1
+        type: ethernet
+  iosv-1:
+    interfaces:
+      Loopback0:
+        type: loopback
+      GigabitEthernet0/0:
+        type: ethernet
+      GigabitEthernet0/1:
+        link: l7
+        type: ethernet
+      GigabitEthernet0/2:
+        link: l4
+        type: ethernet
+      GigabitEthernet0/3:
+        link: l0
+        type: ethernet
+  iosv-4:
+    interfaces:
+      Loopback0:
+        type: loopback
+      GigabitEthernet0/0:
+        type: ethernet
+      GigabitEthernet0/1:
+        link: l5
+        type: ethernet
+      GigabitEthernet0/2:
+        link: l4
+        type: ethernet
+      GigabitEthernet0/3:
+        link: l2
+        type: ethernet
+  iosv-3:
+    interfaces:
+      Loopback0:
+        type: loopback
+      GigabitEthernet0/0:
+        type: ethernet
+      GigabitEthernet0/1:
+        link: l6
+        type: ethernet
+      GigabitEthernet0/2:
+        link: l5
+        type: ethernet
+      GigabitEthernet0/3:
+        link: l3
+        type: ethernet
+  PC4:
+    interfaces:
+      eth0:
+        link: l2
+        type: ethernet
+  PC3:
+    interfaces:
+      eth0:
+        link: l3
+        type: ethernet
+  PC1:
+    interfaces:
+      eth0:
+        link: l0
+        type: ethernet
+  PC2:
+    interfaces:
+      eth0:
+        link: l1
+        type: ethernet

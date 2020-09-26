@@ -1,0 +1,98 @@
+vars:
+  device1: a
+  device2: uut
+  device3: pc1
+  device4: pc2
+  device5: pc3
+  device6: pc4
+  device7: iosv-1
+  device8: iosv-2
+Ping_Test:
+  description: "full-mesh ping test between linux hosts"
+  groups: ["test"]
+  source:
+    pkg: genie.libs.sdk
+    class: triggers.blitz.blitz.Blitz
+  test_sections:
+    - ping_check_pc1_pc2:
+        - execute:
+            device: pc1
+            command: "ping -c 5 10.0.2.100"
+            exclude:
+              - "100% packet loss"
+    - ping_check_pc1_pc3:
+        - execute:
+            device: pc1
+            command: "ping -c 5 10.0.3.100"
+            exclude:
+              - "100% packet loss"
+    - ping_check_pc1_pc4:
+        - execute:
+            device: pc1
+            command: "ping -c 5 10.0.4.100"
+            exclude:
+              - "100% packet loss"
+    - ping_pc3_pc4:
+        - execute:
+            device: pc3
+            command: "ping -c 5 10.0.4.100"
+            exclude:
+              - "100% packet loss"
+    - ping_pc2_pc3:
+        - execute:
+            device: pc2
+            command: "ping -c 5 10.0.3.100"
+            exclude:
+              - "100% packet loss"
+    - ping_pc2_pc4:
+        - execute:
+            device: pc2
+            command: "ping -c 5 10.0.4.100"
+            exclude:
+              - "100% packet loss"
+    - uut_name_test:
+        - execute:
+            device: uut
+            command: "ping 10.0.4.100"
+            include:
+              - "5/5"
+
+OSPF_Cost_Test:
+  groups: ["nxos"]
+  source:
+    pkg: genie.libs.sdk
+    class: triggers.blitz.blitz.Blitz
+  test_sections:
+    - lsdb_ios1:
+        - execute:
+            device: iosv-1
+            command: "show ip ospf interface brief"
+            include:
+              - "10"
+        - api:
+
+
+OSPF_Neighbors_Test:
+  groups: ["nxos"]
+  source:
+    pkg: genie.libs.sdk
+    class: triggers.blitz.blitz.Blitz
+  test_sections:
+    - ping_check:
+        - execute:
+            device: ios2
+            command: "ping -c 5 192.168.3.100"
+            include:
+              - "5/5"
+OSPF_LSDB_Test:
+  groups: ["nxos"]
+  source:
+    pkg: genie.libs.sdk
+    class: triggers.blitz.blitz.Blitz
+  test_sections:
+    - ping_check:
+        - execute:
+            device: ios2
+            command: "ping -c 5 192.168.3.100"
+            include:
+              - "5/5"

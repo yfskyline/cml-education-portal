@@ -1,0 +1,200 @@
+vars:
+  device1: a
+  device2: uut
+  device3: pc1
+  device4: pc2
+  device5: pc3
+  device6: pc4
+  device7: iosv-1
+  device8: iosv-2
+
+# Name of the testcase
+Ping_Test:
+  # description of the testcase
+  description: "full-mesh ping test between linux hosts"
+  # Only run tests in groups marked with "test"
+  groups: ["enabled"]
+  # Location of the Blitz trigger
+  source:
+    pkg: genie.libs.sdk
+    class: triggers.blitz.blitz.Blitz
+  
+  # Field containing all the Testcase sections
+  test_sections:
+    # Section name - Can be any name, it will show as the first section of the testcase
+    - ping_check_pc1_pc2:
+        # List of actions
+        - execute:
+            device: pc1
+            command: "ping -c 5 10.0.2.100"
+            include:
+              - "64"
+            exclude:
+              - "100% packet loss"
+        - sleep:
+            sleep_time: 3
+    # Second section name
+    - ping_check_pc1_pc3:
+        # Action #2
+        # Send ping command to the device "pc1" and verify  if part of a string is in the output or not
+        - execute:
+            device: pc1
+            command: "ping -c 5 10.0.3.100"
+            include:
+              - "64"
+            exclude:
+              - "100% packet loss"
+    - ping_check_pc1_pc4:
+        - execute:
+            device: pc1
+            command: "ping -c 5 10.0.4.100"
+            exclude:
+              - "100% packet loss"
+    - ping_pc3_pc4:
+        - execute:
+            device: pc3
+            command: "ping -c 5 10.0.4.100"
+            exclude:
+              - "100% packet loss"
+    - ping_pc2_pc3:
+        - execute:
+            device: pc2
+            command: "ping -c 5 10.0.3.100"
+            exclude:
+              - "100% packet loss"
+    - ping_pc2_pc4:
+        - execute:
+            device: pc2
+            command: "ping -c 5 10.0.4.100"
+            exclude:
+              - "100% packet loss"
+
+
+OSPF_Cost_Test:
+  description: "verify if the cost of ospf is appropriate"
+  groups: ["enabled"]
+  source:
+    pkg: genie.libs.sdk
+    class: triggers.blitz.blitz.Blitz
+  test_sections:
+    - lsdb_ios1:
+        - execute:
+            device: iosv-1
+            command: "show ip ospf interface brief"
+            include:
+              - "10"
+        - api:
+            description: get the api value and verify the output
+            device: uut
+            function: get_ospf_neighbors_in_state
+            arguments:
+              state: full
+            include:
+              - ['10.0.0.3', '10.0.0.1']
+OSPF_Neighbors_Test:
+  description: get the api value and verify the output
+  groups: ["enabled"]
+  source:
+    pkg: genie.libs.sdk
+    class: triggers.blitz.blitz.Blitz
+  test_sections:
+    - check_neighbor_list:
+        - api:
+            device: uut
+            function: get_ospf_neighbors_in_state
+            arguments:
+              state: full
+            include:
+              - ['10.0.0.3', '10.0.0.1']
+OSPF_LSDB_Test:
+  description: verify the neighbors are all in place
+  groups: ["enabled"]
+  source:
+    pkg: genie.libs.sdk
+    class: triggers.blitz.blitz.Blitz
+  test_sections:
+    - ping_check:
+        - execute:
+            device: uut
+            command: "show ip ospf database"
+            include:
+              - "10.0.0.1"
+              - "10.0.0.2"
+              - "10.0.0.3"
+              - "10.0.0.4"
+TraceRoute_Test:
+  description: verify if shutting down the interface changes the path
+  groups: ["enabled"]
+  source:
+    pkg: genie.libs.sdk
+    class: triggers.blitz.blitz.Blitz
+  test_sections:
+    - traceroute_pc2_pc4:
+        - execute:
+            device: pc2
+            command: "traceroute 10.0.4.100"
+            include:
+              - "192.168.1.2"
+    - shut_interface:
+        - configure:
+            device: iosv-3
+            command: |
+              interface gigabitEthernet 0/2
+              shutdown
+        - sleep:
+            sleep_time: 3
+    - traceroute_pc2_pc4:
+        - execute:
+            device: pc2
+            command: "traceroute 10.0.4.100"
+            include:
+              - "192.168.0.1"
+        - sleep:
+            sleep_time: 3
+    - unshut_interface:
+        - configure:
+            device: iosv-3
+            command: |
+              interface gigabitEthernet 0/2
+              no shutdown
+Router_ID_Test:
+  description: verify if the router-id is appropriate
+  groups: ["enabled"]
+  source:
+    pkg: genie.libs.sdk
+    class: triggers.blitz.blitz.Blitz
+  test_sections:
+    - ping_check:
+        - execute:
+            device: uut
+            command: "show ip protocols"
+            include:
+              - "Router ID 10.0.0.2"
+Passive_Interface_Test:
+  description: verify if the passive-interface configuration is appropriate
+  groups: ["enabled"]
+  source:
+    pkg: genie.libs.sdk
+    class: triggers.blitz.blitz.Blitz
+  test_sections:
+    - verify_passive_interface:
+        - execute:
+            device: uut
+            command: "show ip protocols"
+            include:
+              - "GigabitEthernet0/3"
+
+Test_Blitz_behavior:
+  description: verify if the passive-interface configuration is appropriate
+  groups: ["available"]
+  source:
+    pkg: genie.libs.sdk
+    class: triggers.blitz.blitz.Blitz
+  test_sections:
+    - test_parser:
+        - execute:
+            device: uut
+            command: show ip ospf database
+            banner: test parser(show ip ospf database)
+            include:
+              - "10.0.0.1"
